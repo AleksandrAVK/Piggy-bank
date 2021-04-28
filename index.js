@@ -9,7 +9,7 @@ let termOfDeposit = document.querySelector('.deposit-term');
 let chartWrapper = document.querySelector('.chart-wrapper');
 let payFirstMonth = 0;
 let paymentEveryMonth = 0;
-
+console.log(termOfDeposit);
 let canvasId = 0;
 const createdCanvasId = canvasId++;
 
@@ -69,13 +69,8 @@ form.addEventListener('submit', (element) => {
   let myChart = new Chart(ctx, {
     type: 'pie',
     data: data
-  });
-  updateChartValue(requiredAmount, 0, myChart);
-  myChart.update();
-
-  updateChartValue(startingAmount, 1, myChart);
-  myChart.update();
-
+  });  
+  
   let newRequiredAmount = newsection.querySelector('.inp-required-amount');//Инпут с требуемой суммой
   let newTermOfDestroid = newsection.querySelector('.inp-term-of-deposit');//Инпут с сроком вклада
   let newStartingAmount = newsection.querySelector('.inp-starting-amount');//инпут с стартовой суммой
@@ -83,15 +78,32 @@ form.addEventListener('submit', (element) => {
   let newPayment = newsection.querySelector('.inp-payment-amount');//Размер ежемесячного
   let newIncome = newsection.querySelector('.income')//доход от процента
 
+
+  updateChartValue(requiredAmount, 0, myChart);
+  myChart.update();
+
+  updateChartValue(startingAmount, 1, myChart);
+  myChart.update();
+
+  updateChartValue(termOfDeposit, 2, myChart);
+  myChart.update();
+
+  updateChartValue(newPrecent, 1, myChart);
+  myChart.update();
+
+
+
   newRequiredAmount.addEventListener('input', (el) => {
     newPayment.innerHTML = (((newRequiredAmount.value - newStartingAmount.value - ((newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value))) / newTermOfDestroid.value).toFixed(4) + "руб.";
     newIncome.innerHTML = (newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value + "руб.";
     updateChartValue(el.target, 0, myChart);
     myChart.update();
   });
-  newTermOfDestroid.addEventListener('input', () => {
+  newTermOfDestroid.addEventListener('input', (el) => {
     newPayment.innerHTML = (((newRequiredAmount.value - newStartingAmount.value - ((newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value))) / newTermOfDestroid.value).toFixed(4) + "руб.";
     newIncome.innerHTML = (newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value + "руб.";
+    updateChartValue(el.target, 2, myChart);
+    myChart.update();
   });
   newStartingAmount.addEventListener('input', (el) => {
     newPayment.innerHTML = (((newRequiredAmount.value - newStartingAmount.value - ((newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value))) / newTermOfDestroid.value).toFixed(4) + "руб.";
@@ -99,9 +111,11 @@ form.addEventListener('submit', (element) => {
     updateChartValue(el.target, 1, myChart);
     myChart.update();
   });
-  newPrecent.addEventListener('input', () => {
+  newPrecent.addEventListener('input', (el) => {
     newPayment.innerHTML = (((newRequiredAmount.value - newStartingAmount.value - ((newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value))) / newTermOfDestroid.value).toFixed(4) + "руб.";
     newIncome.innerHTML = (newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value + "руб.";
+    updateChartValue(el.target, 3, myChart);
+    myChart.update();
   });
 
 
@@ -128,14 +142,26 @@ function newGraff() {
 let data = {
   labels: [
     'Требуемая сумма',
-    'Стартовая сумма'
+    'Стартовая сумма',
+    'Срок выплаты',
+    'Процент по вкладу'
   ],
   datasets: [{
     label: 'My Dataset',
     data: [],
     backgroundColor: [
       'rgb(255, 99, 132)',
-      'rgb(54, 162, 235)'
+      'rgb(54, 162, 235)',
+      'rgb(255, 205, 86)',
+      'rgb(0, 128, 0)',
+      'rgb(128, 0, 128)',
+      'rgb(128, 128, 128)',
+      'rgb(0, 255, 255)',
+      'rgb(0, 100, 0)',
+      'rgb(0, 255, 0)',
+      'rgb(255, 215, 0)',
+      'rgb(238, 130, 238)',
+      'rgb(138 43 226)'
     ],
     hoverOffset: 34,
     borderWidth: 8,
