@@ -1,22 +1,17 @@
-
-
-
 let form = document.querySelector('.user-from');
-
 let calculateButton = document.querySelector('.calculate-button');
 let targetName = document.querySelector('.target-name');
 let requiredAmount = document.querySelector('.required-amount');
 let dateRequire = document.querySelector('.deposit-term')
 let depositPercentage = document.querySelector('.deposit-percentage');
 let startingAmount = document.querySelector('.starting-amount');
-
 let termOfDeposit = document.querySelector('.deposit-term');
 let chartWrapper = document.querySelector('.chart-wrapper');
-let myChart;
+let payFirstMonth = 0;
+let paymentEveryMonth = 0;
 
-let ctx = document.getElementById('myChart').getContext('2d');
-let termOfDeposit = document.querySelector('.deposit-term');
-// import Chart from 'chart.js/auto';
+let canvasId = 0;
+const createdCanvasId = canvasId++;
 
 class CalculateResultsObject {
   constructor(name, amount, percents, startamount, date) {
@@ -28,7 +23,8 @@ class CalculateResultsObject {
   }
 }
 
-let canvasId = 0;
+
+
 
 function createNewSection() {
   let newWrapper = document.createElement('div');
@@ -37,254 +33,124 @@ function createNewSection() {
   let newButton = document.createElement('button');
   newButton.className = "delete-botton";
   newButton.type = "button";
-  newButton.innerHTML = "Удалить";
+  newButton.innerHTML = "УДАЛИТЬ";
   let newChart = newGraff();
   const newSection = document.createElement('ul');
   newSection.className = 'target-card';
 
-  newSection.innerHTML = `<li class="item"><div><input value = "${objOfResult.name}" class="inp-target"></div></li>
-                          <li class="item"><div><p>Требуемая сумма</p><input value = "${objOfResult.amount}" class="inp-required-amount">руб.</div></li>
-                          <li class="item"><div><p>Срок выплаты</p><input value = "${objOfResult.date}" class="inp-term-of-deposit">мес.</div></li>
-                          <li class="item"><div><p>Стартовая сумма</p><input value = "${objOfResult.startamount}" class="inp-starting-amount">руб.</div></li>
-                          <li class="item item-end"><div><p>Процент по вкладу</p><input value = "${objOfResult.percents}" class="inp-percent">%</div></li>
-                          <li class="item"><div><p class="interest-income">Доход от процента по вкладу</p><p class="income">${(objOfResult.amount - objOfResult.startamount)/100 * objOfResult.percents} руб.</p></div></li>
-                          <li class="item-payment-amount"><div><p class="payment">Размер ежемесячного платежа</p><p class="inp-payment-amount">${((objOfResult.amount - objOfResult.startamount - ((objOfResult.amount - objOfResult.startamount)/100 * objOfResult.percents))/objOfResult.date).toFixed(4)} руб.</div></p></li>`;
-
-  newSection.append(newButton);
-
-  // newWrapper.prepend(newChart);
-  // newWrapper.append(newSection)
+  newSection.innerHTML = `<li class="item"><input value = "${objOfResult.name}" class="inp-target"></li>
+                          <li class="item"><div class="block-item"><p class="treb-sum">Требуемая сумма</p><input value = "${objOfResult.amount}" class="inp-required-amount"><p class="segment">руб.</p></div></li>
+                          <li class="item"><div class="block-item"><p class="start-sum">Стартовая сумма</p><input value = "${objOfResult.startamount} " class="inp-starting-amount"><p class="segment">руб.</p></div></li>
+                          <li class="item"><div class="block-item"><p class="srok-vyplati">Срок выплаты</p><input value = "${objOfResult.date}" class="inp-term-of-deposit"><p class="segment">мес.</p></div></li>
+                          <li class="item item-end"><div class="block-item"><p class="precent-vklad">Процент по вкладу</p><input value = "${objOfResult.percents}" class="inp-percent"><p class="segment">%</p></div></li>
+                          <li class="item"><div class="block-item"><p class="interest-income">Доход от процента по вкладу</p><p class="income">${((objOfResult.amount - objOfResult.startamount) / 100 * objOfResult.percents).toFixed(4)} руб.</p></div></li>
+                          <li class="item-payment-amount"><div class="block-item"><p class="payment">Размер ежемесячного платежа</p><p class="inp-payment-amount">${((objOfResult.amount - objOfResult.startamount - ((objOfResult.amount - objOfResult.startamount) / 100 * objOfResult.percents)) / objOfResult.date).toFixed(4)} руб.</div></p></li>`;
+  newSection.prepend(newButton);
   newWrapper.append(newChart);
   const createdCanvasId = canvasId++;
   newWrapper.prepend(newSection)
-  setTimeout(() => {
-    let oldCanvas = newWrapper.querySelector('canvas');
-    let canvas = document.getElementById(`createdChart-${createdCanvasId}`)  
-
-    console.log(oldCanvas, canvas);
-    console.log(oldCanvas === canvas);
-    let ctx = canvas.getContext('2d');
-    console.log(ctx);
-    myChart = new Chart(ctx, {
-      type: 'pie',
-      data: data
-    });
-    console.log(data, myChart);
-    myChart.update();
-  }, 10)
   return newWrapper;
 }
 
-function newGraff() {
-  let graff = document.createElement("div");
-  graff.className = "chart-wrapper";
-  graff.innerHTML = `<canvas id="createdChart-${canvasId}"></canvas>`;
-
-  return graff;
-}
-
-
-
-calculateButton.addEventListener('click', (element) => {
-
 form.addEventListener('submit', (element) => {
-  
 
   element.preventDefault();
-  let newsection = createNewSection();
-  let clone = newsection.cloneNode(true);
-  document.querySelector('.newSection').append(clone);
-
-  console.log(clone);
-  document.querySelector('.inp-required-amount').addEventListener('input', () => {
-    document.querySelector('.income').innerHTML = (document.querySelector('.inp-required-amount').value - document.querySelector('.inp-starting-amount').value) / 100 * document.querySelector('.inp-percent').value;
-  })
-
-  if (Number(requiredAmount.value) < Number(startingAmount.value) ) {
+  if (Number(requiredAmount.value) < Number(startingAmount.value)) {
     alert('Внимание! Вы ввели неверные данные (требуемая сумма меньше первоначального взноса)!')
-    clone.remove();
+    return;
   }
+  let newsection = createNewSection();
 
-  let newRequiredAmount = document.querySelector('.inp-required-amount');//Инпут с требуемой суммой
-  let newTermOfDestroid = document.querySelector('.inp-term-of-deposit');//Инпут с сроком вклада
-  let newStartingAmount = document.querySelector('.inp-starting-amount');//инпут с стартовой суммой
-  let newPrecent = document.querySelector('.inp-percent');//Инпут с процентом 
-  let newPayment = document.querySelector('.inp-payment-amount');//Размер ежемесячного
-  let newIncome = document.querySelector('.income')//доход от процента
+  document.querySelector('.newSectionContainer').append(newsection);
 
-  newRequiredAmount.addEventListener('input', () => {
-    newPayment.innerHTML = (((newRequiredAmount.value - newStartingAmount.value - ((newRequiredAmount.value - newStartingAmount.value)/100 * newPrecent.value)))/newTermOfDestroid.value).toFixed(4);
-    newIncome.innerHTML = (newRequiredAmount.value - newStartingAmount.value)/100 * newPrecent.value;
+  let canvas = newsection.querySelector('canvas');
+  let ctx = canvas.getContext('2d');
+
+  let myChart = new Chart(ctx, {
+    type: 'pie',
+    data: data
+  });
+  updateChartValue(requiredAmount, 0, myChart);
+  myChart.update();
+
+  updateChartValue(startingAmount, 1, myChart);
+  myChart.update();
+
+  let newRequiredAmount = newsection.querySelector('.inp-required-amount');//Инпут с требуемой суммой
+  let newTermOfDestroid = newsection.querySelector('.inp-term-of-deposit');//Инпут с сроком вклада
+  let newStartingAmount = newsection.querySelector('.inp-starting-amount');//инпут с стартовой суммой
+  let newPrecent = newsection.querySelector('.inp-percent');//Инпут с процентом 
+  let newPayment = newsection.querySelector('.inp-payment-amount');//Размер ежемесячного
+  let newIncome = newsection.querySelector('.income')//доход от процента
+
+  newRequiredAmount.addEventListener('input', (el) => {
+    newPayment.innerHTML = (((newRequiredAmount.value - newStartingAmount.value - ((newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value))) / newTermOfDestroid.value).toFixed(4) + "руб.";
+    newIncome.innerHTML = (newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value + "руб.";
+    updateChartValue(el.target, 0, myChart);
+    myChart.update();
   });
   newTermOfDestroid.addEventListener('input', () => {
-    newPayment.innerHTML = (((newRequiredAmount.value - newStartingAmount.value - ((newRequiredAmount.value - newStartingAmount.value)/100 * newPrecent.value)))/newTermOfDestroid.value).toFixed(4);
-    newIncome.innerHTML = (newRequiredAmount.value - newStartingAmount.value)/100 * newPrecent.value;
+    newPayment.innerHTML = (((newRequiredAmount.value - newStartingAmount.value - ((newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value))) / newTermOfDestroid.value).toFixed(4) + "руб.";
+    newIncome.innerHTML = (newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value + "руб.";
   });
-  newStartingAmount.addEventListener('input', () => {
-    newPayment.innerHTML = (((newRequiredAmount.value - newStartingAmount.value - ((newRequiredAmount.value - newStartingAmount.value)/100 * newPrecent.value)))/newTermOfDestroid.value).toFixed(4);
-    newIncome.innerHTML = (newRequiredAmount.value - newStartingAmount.value)/100 * newPrecent.value;
+  newStartingAmount.addEventListener('input', (el) => {
+    newPayment.innerHTML = (((newRequiredAmount.value - newStartingAmount.value - ((newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value))) / newTermOfDestroid.value).toFixed(4) + "руб.";
+    newIncome.innerHTML = (newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value + "руб.";
+    updateChartValue(el.target, 1, myChart);
+    myChart.update();
   });
   newPrecent.addEventListener('input', () => {
-    newPayment.innerHTML = (((newRequiredAmount.value - newStartingAmount.value - ((newRequiredAmount.value - newStartingAmount.value)/100 * newPrecent.value)))/newTermOfDestroid.value).toFixed(4);
-    newIncome.innerHTML = (newRequiredAmount.value - newStartingAmount.value)/100 * newPrecent.value;
+    newPayment.innerHTML = (((newRequiredAmount.value - newStartingAmount.value - ((newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value))) / newTermOfDestroid.value).toFixed(4) + "руб.";
+    newIncome.innerHTML = (newRequiredAmount.value - newStartingAmount.value) / 100 * newPrecent.value + "руб.";
   });
 
 
-  clone.querySelector('.delete-botton').addEventListener('click', () => {
-    clone.remove();
+
+  newsection.querySelector('.delete-botton').addEventListener('click', () => {
+    newsection.remove();
   })
   targetName.value = "";
   requiredAmount.value = "";
   dateRequire.value = "";
   depositPercentage.value = "";
   startingAmount.value = "";
-
-
 })
 
 
 
+function newGraff() {
+  let graff = document.createElement("div");
+  graff.className = "chart-wrapper";
+  graff.innerHTML = `<canvas id="createdChart-${canvasId}"></canvas>`;
+  return graff;
+}
+
 let data = {
   labels: [
-    'January',
-    'Febrary',
-    'March',
-    'April',
-    'May',
-    'June',
-    'Jule',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
+    'Требуемая сумма',
+    'Стартовая сумма'
   ],
   datasets: [{
     label: 'My Dataset',
-    data: [10, 20, 30, 40],
+    data: [],
     backgroundColor: [
       'rgb(255, 99, 132)',
-      'rgb(54, 162, 235)',
-      'rgb(255, 205, 86)',
-      'rgb(0, 128, 0)',
-      'rgb(128, 0, 128)',
-      'rgb(128, 128, 128)',
-      'rgb(0, 255, 255)',
-      'rgb(0, 100, 0)',
-      'rgb(0, 255, 0)',
-      'rgb(255, 215, 0)',
-      'rgb(238, 130, 238)',
-      'rgb(138 43 226)'
+      'rgb(54, 162, 235)'
     ],
-    hoverOffset: 13,
-    borderWidth: 2,
-    borderColor: '#f11f23f3',
-    borderRadius: 25
+    hoverOffset: 34,
+    borderWidth: 8,
+    borderColor: '#fff3',
+    borderRadius: 1
   }],
 
 };
 
-// let ctx = document.getElementById('myChart').getContext('2d');
-// console.log(ctx);
-
-// let myChart = new Chart(ctx, {
-//   type: 'pie',
-//   data: data
-// });
-
-
-let updateChartValue = (input, dataOrder) => {
-  input.addEventListener('input', event => {
-
-    myChart.data.datasets[0].data[dataOrder] = Number(event.target.value);
-    myChart.update();
-    // console.log(data.datasets[0].data[0]);
-  })
-};
-
-
-updateChartValue(termOfDeposit, 0);
-updateChartValue(requiredAmount, 1);
-updateChartValue(depositPercentage, 2);
-updateChartValue(startingAmount, 3);
 
 
 
+function updateChartValue(input, dataOrder, myChart) {
+  myChart.data.datasets[0].data[dataOrder] = Number(input.value);
 
+}
 
-
-
-
-
-
-
-  // let i = +0;
-//   graff.innerHTML = `<canvas id="myChart${i + Number(1)}"></canvas>`;
-
-// console.log(i);
-
-
-// termOfDeposit.oninput(() => {
-//     myChart.data.dataset[0].data[dataOrder] = event.target.value;
-//     myChart.update();
-// })
-
-
-    // console.log(event.target.value);
-    // console.log(myChart[0].data.datasets.data[0]);
-    // console.log(data.datasets[0].data[0]);
-
-
-    // let ctx = document.getElementById('myChart').getContext('2d');
-
-// let myChart = new Chart(document.getElementById('myChart').getContext('2d'), {
-//   type: 'pie',
-//   data: data
-// })
-
-
-
-// let createGraff = () => {
-  //   let graff = document.createElement("div");
-  //   graff.className = "chart-wrapper";
-  //   graff.innerHTML = `<canvas id="myChart"></canvas>`;
-  //   return graff;
-  //   };
-  // console.log(createGraff);
-  // let cloneGraff = createGraff.cloneNode(true);
-  // console.log(cloneGraff);
-  // chartWrapperContainer.append(cloneGraff);
-
-
-  // chartWrapper.classList.add('showContent');
-  // chartWrapper.style.display = 'flex';
-
-
-    // let createGraff = () => {
-  //   let graff = document.createElement("div");
-  //   graff.className = "chart-wrapper";
-  //   graff.innerHTML = `<canvas id="myChart"></canvas>`;
-  //   return graff;
-  //   };
-  // let createGraff123 = createGraff();
-  // console.log(createGraff);
-  // let cloneGraff = createGraff123.cloneNode(true);
-  // console.log(cloneGraff);
-  // chartWrapperContainer.append(cloneGraff);
-  // let ctx = document.getElementById('myChart').getContext('2d');
-
-  // let myChart = new Chart(document.getElementById('myChart').getContext('2d'), {
-  //   type: 'pie',
-  //   data: data
-  // })
-
-  // graff.innerHTML = `<canvas id="myChart"></canvas>`;
-  // // newSection.prepend(graff);
-  // // chartWrapperContainer.insertBefore(graff,newSection);
-  // // chartWrapperContainer.insertBefore(graff,newSection);
-  // chartWrapper.classList.add('.showContent');
-  // ctx = document.getElementById('myChart').getContext('2d');
-
-  // console.log(objOfResult);
-})
 
