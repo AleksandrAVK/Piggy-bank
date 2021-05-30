@@ -21,7 +21,7 @@ RUS Сервис предназначен для расчёта ежемесяч
 Удаление вкладов.
 Загрузка фото других пользователей с сервера.
 
-Технологии, используемые в проекте: JavaScript, CSS, HTML, GIT.
+Технологии, используемые в проекте: JavaScript, CSS, HTML, библиотека сhart.js, GIT.
 
 
 
@@ -47,5 +47,5 @@ Add multiple deposits.
 Delete deposits.
 Download photos of other users from the server.
 
-Technologies used in the project: JavaScript, CSS, HTML, GIT.
+Technologies used in the project: JavaScript, CSS, HTML, library сhart.js GIT.
 
